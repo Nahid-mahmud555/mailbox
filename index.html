@@ -8,7 +8,7 @@
     <!-- ফন্ট অ্যাওসাম আইকন -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- গুগল ফন্ট - Inter -->
+    <!-- গুগল ফন্ট -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Supabase CDN -->
@@ -30,7 +30,6 @@
             overflow-x: hidden;
         }
 
-        /* অ্যানিমেটেড ব্যাকগ্রাউন্ড */
         body::before {
             content: '';
             position: absolute;
@@ -41,7 +40,7 @@
             pointer-events: none;
         }
 
-        /* ========== ল্যান্ডিং পেজ ========== */
+        /* ল্যান্ডিং পেজ */
         .landing-container {
             display: flex;
             justify-content: center;
@@ -57,7 +56,7 @@
             backdrop-filter: blur(20px);
             border-radius: 48px;
             padding: 70px 60px;
-            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5);
             text-align: center;
             max-width: 700px;
             width: 100%;
@@ -197,7 +196,7 @@
             font-weight: 500;
         }
 
-        /* ========== অথ পেজ ========== */
+        /* অথ পেজ */
         .auth-container {
             display: flex;
             justify-content: center;
@@ -308,7 +307,7 @@
             font-size: 14px;
         }
 
-        /* ========== ইনবক্স ========== */
+        /* ইনবক্স */
         .inbox-container {
             min-height: 100vh;
             background: #F9FAFB;
@@ -316,7 +315,6 @@
             z-index: 10;
         }
 
-        /* ন্যাভবার */
         .navbar {
             background: white;
             padding: 0 30px;
@@ -430,13 +428,11 @@
             color: #6B7280;
         }
 
-        /* মেইন এরিয়া */
         .main-content {
             display: flex;
             height: calc(100vh - 70px);
         }
 
-        /* সাইডবার */
         .sidebar {
             width: 260px;
             background: white;
@@ -555,7 +551,6 @@
             color: #6B7280;
         }
 
-        /* ইমেইল লিস্ট */
         .email-list {
             flex: 1;
             background: white;
@@ -577,10 +572,6 @@
 
         .email-item:hover {
             background: #F9FAFB;
-        }
-
-        .email-item.unread {
-            background: #F0F9FF;
         }
 
         .email-avatar {
@@ -635,7 +626,6 @@
             text-overflow: ellipsis;
         }
 
-        /* মোডাল */
         .modal {
             display: none;
             position: fixed;
@@ -708,7 +698,6 @@
             box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
         }
 
-        /* এলার্ট */
         .alert {
             padding: 14px 18px;
             border-radius: 12px;
@@ -730,7 +719,6 @@
             border: 1px solid #FECACA;
         }
 
-        /* অ্যানিমেশন */
         @keyframes floatIn {
             from {
                 opacity: 0;
@@ -764,7 +752,6 @@
             }
         }
 
-        /* স্ক্রলবার */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -782,7 +769,6 @@
             background: #6B7280;
         }
 
-        /* রেসপন্সিভ */
         @media (max-width: 768px) {
             .landing-card {
                 padding: 40px 30px;
@@ -953,7 +939,6 @@
 
     <!-- ইনবক্স পেজ -->
     <div id="inboxPage" class="inbox-container" style="display: none;">
-        <!-- ন্যাভবার -->
         <nav class="navbar">
             <div class="nav-left">
                 <div class="logo">
@@ -979,9 +964,7 @@
             </div>
         </nav>
         
-        <!-- মেইন এরিয়া -->
         <div class="main-content">
-            <!-- সাইডবার -->
             <div class="sidebar">
                 <button class="compose-btn" onclick="showComposeModal()">
                     <i class="fas fa-pen"></i>
@@ -989,15 +972,10 @@
                 </button>
                 
                 <ul class="folder-list">
-                    <li class="active">
+                    <li class="active" onclick="loadEmails()">
                         <i class="fas fa-inbox"></i>
                         ইনবক্স
                         <span class="badge" id="inboxCount">0</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-star"></i>
-                        গুরুত্বপূর্ণ
-                        <span class="badge">3</span>
                     </li>
                     <li>
                         <i class="fas fa-paper-plane"></i>
@@ -1005,9 +983,14 @@
                         <span class="badge" id="sentCount">0</span>
                     </li>
                     <li>
+                        <i class="fas fa-star"></i>
+                        গুরুত্বপূর্ণ
+                        <span class="badge">0</span>
+                    </li>
+                    <li>
                         <i class="fas fa-file"></i>
                         ড্রাফট
-                        <span class="badge">2</span>
+                        <span class="badge">0</span>
                     </li>
                     <li>
                         <i class="fas fa-trash"></i>
@@ -1024,16 +1007,15 @@
                     <div class="progress-bar">
                         <div class="progress-fill"></div>
                     </div>
-                    <div class="storage-text">১৫ জিবির ২.৫ জিবি ব্যবহৃত</div>
+                    <div class="storage-text">১৫ জিবির ০ জিবি ব্যবহৃত</div>
                 </div>
             </div>
             
-            <!-- ইমেইল লিস্ট -->
             <div class="email-list" id="emailList">
-                <!-- ডায়নামিক কন্টেন্ট -->
                 <div style="text-align: center; padding: 60px 20px; color: #9CA3AF;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 40px; margin-bottom: 15px; color: #38BDF8;"></i>
-                    <p>ইমেইল লোড হচ্ছে...</p>
+                    <i class="fas fa-inbox" style="font-size: 60px; color: #E5E7EB; margin-bottom: 20px;"></i>
+                    <p style="color: #6B7280; font-size: 16px;">ইনবক্স খালি</p>
+                    <p style="color: #9CA3AF; font-size: 14px; margin-top: 10px;">নতুন মেইল লিখতে কম্পোজ বাটনে ক্লিক করুন</p>
                 </div>
             </div>
         </div>
@@ -1051,7 +1033,7 @@
             
             <form id="composeForm">
                 <div class="form-group">
-                    <label>প্রাপক</label>
+                    <label>প্রাপকের ইমেইল</label>
                     <div class="input-group">
                         <i class="fas fa-envelope"></i>
                         <input type="email" id="recipientEmail" class="form-control" placeholder="to@example.com" required>
@@ -1080,16 +1062,17 @@
     </div>
 
     <script>
-        // Supabase কনফিগারেশন
-        const SUPABASE_URL = 'https://osquknvjwyqvqmwnpssv.supabase.co'; // আপনার URL দিন
-        const SUPABASE_KEY = 'sb_publishable_aDplwH0DMUN7BrxBaq1cpQ_M9skNt0f'; // আপনার Key দিন
+        // ==================== আপনার Supabase তথ্য দিন ====================
+        const SUPABASE_URL = 'https://osquknvjwyqvqmwnpssv.supabase.co'; // আপনার URL
+        const SUPABASE_KEY = 'sb_publishable_aDplwH0DMUN7BrxBaq1cpQ_M9skNt0f'; // আপনার Anon Key
         
+        // Supabase ক্লায়েন্ট তৈরি
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         // গ্লোবাল ভেরিয়েবল
         let currentUser = null;
         
-        // পেজ নেভিগেশন
+        // ==================== পেজ নেভিগেশন ====================
         function showLanding() {
             document.getElementById('landingPage').style.display = 'flex';
             document.getElementById('signInPage').style.display = 'none';
@@ -1120,7 +1103,7 @@
             loadEmails();
         }
         
-        // এলার্ট ফাংশন
+        // ==================== এলার্ট ফাংশন ====================
         function showAlert(elementId, message, isSuccess = false) {
             const alert = document.getElementById(elementId);
             alert.textContent = message;
@@ -1132,7 +1115,7 @@
             }, 3000);
         }
         
-        // সাইন আপ
+        // ==================== সাইন আপ ====================
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1141,7 +1124,8 @@
             const password = document.getElementById('signupPassword').value;
             
             try {
-                const { data: authData, error: authError } = await _supabase.auth.signUp({
+                // Supabase এ সাইন আপ
+                const { data, error } = await _supabase.auth.signUp({
                     email: email,
                     password: password,
                     options: {
@@ -1151,32 +1135,36 @@
                     }
                 });
                 
-                if (authError) throw authError;
+                if (error) throw error;
                 
-                if (authData.user) {
+                if (data.user) {
+                    // profiles টেবিলে ডাটা সেভ
                     const { error: profileError } = await _supabase
                         .from('profiles')
                         .insert([
                             {
-                                id: authData.user.id,
+                                id: data.user.id,
                                 full_name: name,
                                 email: email,
                                 created_at: new Date()
                             }
                         ]);
                     
-                    if (profileError) console.error('Profile error:', profileError);
+                    if (profileError) {
+                        console.error('Profile insert error:', profileError);
+                    }
                 }
                 
-                showAlert('signupAlert', 'সাইন আপ সফল! এখন লগইন করুন।', true);
+                showAlert('signupAlert', 'রেজিস্ট্রেশন সফল! এখন লগইন করুন।', true);
                 setTimeout(() => showSignIn(), 2000);
                 
             } catch (error) {
                 showAlert('signupAlert', error.message);
+                console.error('Signup error:', error);
             }
         });
         
-        // সাইন ইন
+        // ==================== সাইন ইন ====================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1198,40 +1186,78 @@
                 
             } catch (error) {
                 showAlert('loginAlert', error.message);
+                console.error('Login error:', error);
             }
         });
         
-        // ইউজার ডাটা লোড
+        // ==================== ইউজার ডাটা লোড ====================
         async function loadUserData() {
             if (!currentUser) return;
             
-            document.getElementById('userName').textContent = currentUser.user_metadata.full_name || 'User';
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userAvatar').textContent = 
-                (currentUser.user_metadata.full_name || 'U')[0].toUpperCase();
+            try {
+                const { data, error } = await _supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (data) {
+                    document.getElementById('userName').textContent = data.full_name || 'User';
+                    document.getElementById('userEmail').textContent = data.email || currentUser.email;
+                    document.getElementById('userAvatar').textContent = (data.full_name || 'U')[0].toUpperCase();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
         }
         
-        // ইমেইল লোড
+        // ==================== ইমেইল লোড ====================
         async function loadEmails() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log('No user logged in');
+                return;
+            }
             
             try {
+                console.log('Loading emails for user:', currentUser.id);
+                
                 const { data: emails, error } = await _supabase
                     .from('emails')
                     .select('*')
                     .eq('recipient_id', currentUser.id)
                     .order('created_at', { ascending: false });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
                 
+                console.log('Emails found:', emails);
                 displayEmails(emails || []);
+                
+                // পাঠানো মেইলের সংখ্যা আপডেট
+                const { data: sentEmails } = await _supabase
+                    .from('emails')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('sender_id', currentUser.id);
+                
+                document.getElementById('sentCount').textContent = sentEmails?.length || 0;
                 
             } catch (error) {
                 console.error('Error loading emails:', error);
+                document.getElementById('emailList').innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: #999;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 40px; color: #ef4444; margin-bottom: 15px;"></i>
+                        <p style="color: #ef4444;">ইমেইল লোড করতে সমস্যা</p>
+                        <p style="font-size: 14px; color: #6B7280; margin-top: 10px;">${error.message}</p>
+                    </div>
+                `;
             }
         }
         
-        // ইমেইল ডিসপ্লে
+        // ==================== ইমেইল ডিসপ্লে ====================
         function displayEmails(emails) {
             const emailList = document.getElementById('emailList');
             const inboxCount = document.getElementById('inboxCount');
@@ -1242,8 +1268,8 @@
                 emailList.innerHTML = `
                     <div style="text-align: center; padding: 80px 20px;">
                         <i class="fas fa-inbox" style="font-size: 60px; color: #E5E7EB; margin-bottom: 20px;"></i>
-                        <p style="color: #9CA3AF; font-size: 18px;">কোনো মেইল নেই</p>
-                        <p style="color: #6B7280; font-size: 14px; margin-top: 10px;">নতুন মেইল লিখুন</p>
+                        <p style="color: #6B7280; font-size: 18px;">কোনো মেইল নেই</p>
+                        <p style="color: #9CA3AF; font-size: 14px; margin-top: 10px;">নতুন মেইল লিখতে কম্পোজ বাটনে ক্লিক করুন</p>
                     </div>
                 `;
                 return;
@@ -1251,9 +1277,14 @@
             
             let html = '';
             emails.forEach(email => {
-                const date = new Date(email.created_at).toLocaleDateString('bn-BD');
+                const date = new Date(email.created_at).toLocaleDateString('bn-BD', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
                 html += `
-                    <div class="email-item">
+                    <div class="email-item" onclick="viewEmail('${email.id}')">
                         <div class="email-avatar">
                             ${email.sender_name ? email.sender_name[0].toUpperCase() : 'U'}
                         </div>
@@ -1262,8 +1293,8 @@
                                 <span class="email-sender">${email.sender_name || 'অজানা'}</span>
                                 <span class="email-date">${date}</span>
                             </div>
-                            <div class="email-subject">${email.subject}</div>
-                            <div class="email-preview">${email.message.substring(0, 60)}...</div>
+                            <div class="email-subject">${email.subject || '(কোন বিষয় নেই)'}</div>
+                            <div class="email-preview">${email.message ? email.message.substring(0, 60) + '...' : ''}</div>
                         </div>
                     </div>
                 `;
@@ -1272,7 +1303,13 @@
             emailList.innerHTML = html;
         }
         
-        // কম্পোজ মোডাল
+        // ==================== মেইল ভিউ (পরবর্তীতে ইমপ্লিমেন্ট করা যাবে) ====================
+        function viewEmail(emailId) {
+            console.log('View email:', emailId);
+            // এখানে মেইল ডিটেইলস দেখানোর ফাংশন যোগ করতে পারেন
+        }
+        
+        // ==================== কম্পোজ মোডাল ====================
         function showComposeModal() {
             document.getElementById('composeModal').classList.add('active');
         }
@@ -1282,67 +1319,116 @@
             document.getElementById('composeForm').reset();
         }
         
-        // মেইল পাঠান
+        // ==================== মেইল পাঠান ====================
         document.getElementById('composeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (!currentUser) return;
+            if (!currentUser) {
+                showAlert('composeAlert', 'আপনি লগইন নেই!');
+                return;
+            }
             
             const recipient = document.getElementById('recipientEmail').value;
             const subject = document.getElementById('subject').value;
             const message = document.getElementById('message').value;
             
             try {
+                console.log('Sending email to:', recipient);
+                
+                // প্রাপকের প্রোফাইল খুঁজুন
                 const { data: recipientData, error: recipientError } = await _supabase
                     .from('profiles')
-                    .select('id')
+                    .select('id, full_name')
                     .eq('email', recipient)
                     .single();
                 
-                if (recipientError) throw new Error('ইমেইলটি খুঁজে পাওয়া যায়নি');
+                if (recipientError) {
+                    console.error('Recipient not found:', recipientError);
+                    throw new Error('এই ইমেইলে কোনো অ্যাকাউন্ট নেই');
+                }
                 
-                const { error: emailError } = await _supabase
+                console.log('Recipient found:', recipientData);
+                
+                // ইমেইল সেভ করুন
+                const { data: emailData, error: emailError } = await _supabase
                     .from('emails')
                     .insert([
                         {
                             sender_id: currentUser.id,
-                            sender_name: currentUser.user_metadata.full_name,
+                            sender_name: currentUser.user_metadata?.full_name || 'Unknown',
                             recipient_id: recipientData.id,
                             recipient_email: recipient,
                             subject: subject,
                             message: message,
                             created_at: new Date()
                         }
-                    ]);
+                    ])
+                    .select();
                 
-                if (emailError) throw emailError;
+                if (emailError) {
+                    console.error('Email insert error:', emailError);
+                    throw emailError;
+                }
                 
-                showAlert('composeAlert', 'মেইল পাঠানো হয়েছে!', true);
+                console.log('Email sent successfully:', emailData);
+                
+                showAlert('composeAlert', 'মেইল সফলভাবে পাঠানো হয়েছে!', true);
                 hideComposeModal();
-                loadEmails();
+                
+                // ইনবক্স রিফ্রেশ করুন
+                setTimeout(() => loadEmails(), 1000);
                 
             } catch (error) {
                 showAlert('composeAlert', error.message);
+                console.error('Send email error:', error);
             }
         });
         
-        // লগআউট
+        // ==================== লগআউট ====================
         async function logout() {
-            await _supabase.auth.signOut();
-            currentUser = null;
-            showLanding();
-        }
-        
-        // চেক ইউজার
-        async function checkUser() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            if (user) {
-                currentUser = user;
-                showInbox();
+            try {
+                const { error } = await _supabase.auth.signOut();
+                if (error) throw error;
+                
+                currentUser = null;
+                showLanding();
+            } catch (error) {
+                console.error('Logout error:', error);
             }
         }
         
-        // মোডাল ক্লোজ
+        function toggleUserMenu() {
+            if (confirm('লগআউট করবেন?')) {
+                logout();
+            }
+        }
+        
+        // ==================== চেক ইউজার সেশন ====================
+        async function checkUser() {
+            try {
+                const { data: { user }, error } = await _supabase.auth.getUser();
+                
+                if (error) {
+                    console.error('Get user error:', error);
+                    showLanding();
+                    return;
+                }
+                
+                if (user) {
+                    console.log('User found:', user);
+                    currentUser = user;
+                    showInbox();
+                } else {
+                    console.log('No user found');
+                    showLanding();
+                }
+            } catch (error) {
+                console.error('Check user error:', error);
+                showLanding();
+            }
+        }
+        
+        // ==================== মোডাল ক্লোজ ====================
         window.onclick = function(event) {
             const modal = document.getElementById('composeModal');
             if (event.target === modal) {
@@ -1350,16 +1436,11 @@
             }
         }
         
-        // ইউজার মেনু টগল (পরবর্তীতে ইমপ্লিমেন্ট করা যাবে)
-        function toggleUserMenu() {
-            // লগআউট অপশন দেখাতে পারেন
-            if (confirm('লগআউট করবেন?')) {
-                logout();
-            }
-        }
-        
-        // শুরুতে চেক করুন
-        checkUser();
+        // ==================== শুরুতে চেক করুন ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, checking user...');
+            checkUser();
+        });
     </script>
 </body>
 </html>
