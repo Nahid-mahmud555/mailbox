@@ -40,6 +40,69 @@
             pointer-events: none;
         }
 
+        /* নোটিফিকেশন টোস্ট */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2000;
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
+            max-width: 350px;
+            border-left: 4px solid #38BDF8;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #38BDF8, #A855F7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
         /* ল্যান্ডিং পেজ */
         .landing-container {
             display: flex;
@@ -551,6 +614,7 @@
             color: #6B7280;
         }
 
+        /* ইমেইল লিস্ট */
         .email-list {
             flex: 1;
             background: white;
@@ -626,6 +690,108 @@
             text-overflow: ellipsis;
         }
 
+        /* ইমেইল ডিটেইলস */
+        .email-detail-view {
+            flex: 1;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .email-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #F3F4F6;
+        }
+
+        .email-detail-sender {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .email-detail-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #38BDF8, #A855F7);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .email-detail-info h2 {
+            color: #1F2937;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .email-detail-meta {
+            color: #6B7280;
+            font-size: 14px;
+        }
+
+        .email-detail-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .detail-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .reply-btn {
+            background: #EFF6FF;
+            color: #38BDF8;
+        }
+
+        .reply-btn:hover {
+            background: #38BDF8;
+            color: white;
+        }
+
+        .back-btn {
+            background: #F3F4F6;
+            color: #4B5563;
+        }
+
+        .back-btn:hover {
+            background: #E5E7EB;
+        }
+
+        .email-detail-subject {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 20px;
+        }
+
+        .email-detail-body {
+            color: #374151;
+            font-size: 16px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        /* মোডাল */
         .modal {
             display: none;
             position: fixed;
@@ -698,6 +864,7 @@
             box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
         }
 
+        /* এলার্ট */
         .alert {
             padding: 14px 18px;
             border-radius: 12px;
@@ -806,6 +973,9 @@
     </style>
 </head>
 <body>
+    <!-- নোটিফিকেশন কন্টেইনার -->
+    <div id="notificationContainer"></div>
+
     <!-- ল্যান্ডিং পেজ -->
     <div id="landingPage" class="landing-container">
         <div class="landing-card">
@@ -950,7 +1120,7 @@
             <div class="nav-right">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="মেইল খুঁজুন...">
+                    <input type="text" placeholder="মেইল খুঁজুন..." id="searchInput" onkeyup="searchEmails()">
                 </div>
                 
                 <div class="user-menu" onclick="toggleUserMenu()">
@@ -982,21 +1152,6 @@
                         পাঠানো
                         <span class="badge" id="sentCount">0</span>
                     </li>
-                    <li>
-                        <i class="fas fa-star"></i>
-                        গুরুত্বপূর্ণ
-                        <span class="badge">0</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-file"></i>
-                        ড্রাফট
-                        <span class="badge">0</span>
-                    </li>
-                    <li>
-                        <i class="fas fa-trash"></i>
-                        ট্র্যাশ
-                        <span class="badge">0</span>
-                    </li>
                 </ul>
                 
                 <div class="storage-info">
@@ -1011,11 +1166,19 @@
                 </div>
             </div>
             
-            <div class="email-list" id="emailList">
-                <div style="text-align: center; padding: 60px 20px; color: #9CA3AF;">
-                    <i class="fas fa-inbox" style="font-size: 60px; color: #E5E7EB; margin-bottom: 20px;"></i>
-                    <p style="color: #6B7280; font-size: 16px;">ইনবক্স খালি</p>
-                    <p style="color: #9CA3AF; font-size: 14px; margin-top: 10px;">নতুন মেইল লিখতে কম্পোজ বাটনে ক্লিক করুন</p>
+            <div id="emailListView" style="display: block; flex: 1;">
+                <div class="email-list" id="emailList">
+                    <div style="text-align: center; padding: 60px 20px; color: #9CA3AF;">
+                        <i class="fas fa-inbox" style="font-size: 60px; color: #E5E7EB; margin-bottom: 20px;"></i>
+                        <p style="color: #6B7280; font-size: 16px;">ইনবক্স খালি</p>
+                        <p style="color: #9CA3AF; font-size: 14px; margin-top: 10px;">নতুন মেইল লিখতে কম্পোজ বাটনে ক্লিক করুন</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="emailDetailView" style="display: none; flex: 1;">
+                <div class="email-detail-view" id="emailDetailContent">
+                    <!-- ডায়নামিক কন্টেন্ট আসবে -->
                 </div>
             </div>
         </div>
@@ -1061,6 +1224,46 @@
         </div>
     </div>
 
+    <!-- রিপ্লাই মোডাল -->
+    <div id="replyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>রিপ্লাই</h3>
+                <button class="close-modal" onclick="hideReplyModal()">&times;</button>
+            </div>
+            
+            <div id="replyAlert" class="alert alert-error"></div>
+            
+            <form id="replyForm">
+                <div class="form-group">
+                    <label>প্রাপকের ইমেইল</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="replyRecipient" class="form-control" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>বিষয়</label>
+                    <div class="input-group">
+                        <i class="fas fa-heading"></i>
+                        <input type="text" id="replySubject" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>মেসেজ</label>
+                    <textarea id="replyMessage" class="textarea-control" placeholder="আপনার রিপ্লাই লিখুন..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-reply"></i>
+                    রিপ্লাই পাঠান
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // ==================== আপনার Supabase তথ্য দিন ====================
         const SUPABASE_URL = 'https://osquknvjwyqvqmwnpssv.supabase.co'; // আপনার URL
@@ -1071,6 +1274,66 @@
         
         // গ্লোবাল ভেরিয়েবল
         let currentUser = null;
+        let currentEmails = [];
+        let realtimeSubscription = null;
+        
+        // ==================== নোটিফিকেশন ফাংশন ====================
+        function showNotification(title, message, isSuccess = true) {
+            const container = document.getElementById('notificationContainer');
+            
+            // সাউন্ড প্লে
+            const audio = new Audio();
+            audio.src = 'data:audio/wav;base64,UklGRlwAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVoAAACAgICAf39/f39/f3+AgICAf39/f39/f3+AgICAf39/f39/f3+AgICAf39/f39/f3+AgICAf39/f39/f3+AgICAf39/f38=';
+            audio.play().catch(e => console.log('Audio play failed:', e));
+            
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+        
+        // ==================== রিয়েল-টাইম সাবস্ক্রিপশন ====================
+        function setupRealtime() {
+            if (realtimeSubscription) {
+                realtimeSubscription.unsubscribe();
+            }
+            
+            if (!currentUser) return;
+            
+            realtimeSubscription = _supabase
+                .channel('emails-channel')
+                .on('postgres_changes', 
+                    { 
+                        event: 'INSERT', 
+                        schema: 'public', 
+                        table: 'emails',
+                        filter: `recipient_id=eq.${currentUser.id}`
+                    }, 
+                    payload => {
+                        console.log('New email received:', payload);
+                        showNotification(
+                            'নতুন মেইল এসেছে! 📧',
+                            `${payload.new.sender_name} থেকে "${payload.new.subject || 'কোন বিষয় নেই'}"`,
+                            true
+                        );
+                        loadEmails(); // সাথে সাথে লোড করুন
+                    }
+                )
+                .subscribe();
+        }
         
         // ==================== পেজ নেভিগেশন ====================
         function showLanding() {
@@ -1078,6 +1341,10 @@
             document.getElementById('signInPage').style.display = 'none';
             document.getElementById('signUpPage').style.display = 'none';
             document.getElementById('inboxPage').style.display = 'none';
+            
+            if (realtimeSubscription) {
+                realtimeSubscription.unsubscribe();
+            }
         }
         
         function showSignIn() {
@@ -1099,8 +1366,11 @@
             document.getElementById('signInPage').style.display = 'none';
             document.getElementById('signUpPage').style.display = 'none';
             document.getElementById('inboxPage').style.display = 'block';
+            document.getElementById('emailListView').style.display = 'block';
+            document.getElementById('emailDetailView').style.display = 'none';
             loadUserData();
             loadEmails();
+            setupRealtime();
         }
         
         // ==================== এলার্ট ফাংশন ====================
@@ -1165,6 +1435,7 @@
                 }
                 
                 showAlert('signupAlert', 'রেজিস্ট্রেশন সফল! এখন লগইন করুন।', true);
+                showNotification('স্বাগতম!', 'রেজিস্ট্রেশন সফল হয়েছে। এখন লগইন করুন।', true);
                 setTimeout(() => showSignIn(), 2000);
                 
             } catch (error) {
@@ -1210,6 +1481,7 @@
                 }
                 
                 showAlert('loginAlert', 'লগইন সফল!', true);
+                showNotification('স্বাগতম!', 'আপনি সফলভাবে লগইন করেছেন।', true);
                 setTimeout(() => showInbox(), 1000);
                 
             } catch (error) {
@@ -1229,7 +1501,7 @@
                     .eq('id', currentUser.id)
                     .single();
                 
-                if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+                if (error && error.code !== 'PGRST116') {
                     console.error('Error loading profile:', error);
                 }
                 
@@ -1238,7 +1510,6 @@
                     document.getElementById('userEmail').textContent = data.email || currentUser.email;
                     document.getElementById('userAvatar').textContent = (data.full_name || 'U')[0].toUpperCase();
                 } else {
-                    // প্রোফাইল না থাকলে display name দেখান
                     document.getElementById('userName').textContent = currentUser.user_metadata?.full_name || 'User';
                     document.getElementById('userEmail').textContent = currentUser.email;
                     document.getElementById('userAvatar').textContent = 
@@ -1251,10 +1522,7 @@
         
         // ==================== ইমেইল লোড ====================
         async function loadEmails() {
-            if (!currentUser) {
-                console.log('No user logged in');
-                return;
-            }
+            if (!currentUser) return;
             
             try {
                 console.log('Loading inbox for user:', currentUser.id);
@@ -1265,13 +1533,11 @@
                     .eq('recipient_id', currentUser.id)
                     .order('created_at', { ascending: false });
                 
-                if (error) {
-                    console.error('Supabase error:', error);
-                    throw error;
-                }
+                if (error) throw error;
                 
-                console.log('Emails found:', emails?.length || 0);
-                displayEmails(emails || []);
+                currentEmails = emails || [];
+                console.log('Emails found:', currentEmails.length);
+                displayEmails(currentEmails);
                 
                 // পাঠানো মেইলের সংখ্যা আপডেট
                 const { data: sentEmails, error: sentError } = await _supabase
@@ -1308,11 +1574,30 @@
                 
                 if (error) throw error;
                 
-                displayEmails(emails || []);
+                currentEmails = emails || [];
+                displayEmails(currentEmails);
                 
             } catch (error) {
                 console.error('Error loading sent emails:', error);
             }
+        }
+        
+        // ==================== ইমেইল সার্চ ====================
+        function searchEmails() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                displayEmails(currentEmails);
+                return;
+            }
+            
+            const filtered = currentEmails.filter(email => 
+                (email.sender_name?.toLowerCase().includes(searchTerm)) ||
+                (email.subject?.toLowerCase().includes(searchTerm)) ||
+                (email.message?.toLowerCase().includes(searchTerm))
+            );
+            
+            displayEmails(filtered);
         }
         
         // ==================== ইমেইল ডিসপ্লে ====================
@@ -1366,10 +1651,119 @@
         }
         
         // ==================== মেইল ভিউ ====================
-        function viewEmail(emailId) {
-            console.log('View email:', emailId);
-            // এখানে মেইল ডিটেইলস দেখানোর ফাংশন যোগ করতে পারেন
+        async function viewEmail(emailId) {
+            const email = currentEmails.find(e => e.id === emailId);
+            if (!email) return;
+            
+            document.getElementById('emailListView').style.display = 'none';
+            document.getElementById('emailDetailView').style.display = 'block';
+            
+            const date = new Date(email.created_at).toLocaleDateString('bn-BD', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.getElementById('emailDetailContent').innerHTML = `
+                <div class="email-detail-header">
+                    <div class="email-detail-sender">
+                        <div class="email-detail-avatar">
+                            ${email.sender_name ? email.sender_name[0].toUpperCase() : 'U'}
+                        </div>
+                        <div class="email-detail-info">
+                            <h2>${email.sender_name || 'অজানা'}</h2>
+                            <div class="email-detail-meta">
+                                <i class="far fa-clock"></i> ${date}<br>
+                                <i class="far fa-envelope"></i> ${email.recipient_email}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="email-detail-actions">
+                        <button class="detail-btn reply-btn" onclick="showReplyModal('${email.sender_name}', '${email.sender_id}', '${email.subject}')">
+                            <i class="fas fa-reply"></i> রিপ্লাই
+                        </button>
+                        <button class="detail-btn back-btn" onclick="backToInbox()">
+                            <i class="fas fa-arrow-left"></i> ব্যাক
+                        </button>
+                    </div>
+                </div>
+                <div class="email-detail-subject">
+                    ${email.subject || '(কোন বিষয় নেই)'}
+                </div>
+                <div class="email-detail-body">
+                    ${email.message.replace(/\n/g, '<br>')}
+                </div>
+            `;
         }
+        
+        function backToInbox() {
+            document.getElementById('emailListView').style.display = 'block';
+            document.getElementById('emailDetailView').style.display = 'none';
+        }
+        
+        // ==================== রিপ্লাই ফাংশন ====================
+        let replyToId = null;
+        
+        function showReplyModal(senderName, senderId, subject) {
+            replyToId = senderId;
+            document.getElementById('replyRecipient').value = senderId;
+            document.getElementById('replySubject').value = `Re: ${subject}`;
+            document.getElementById('replyModal').classList.add('active');
+        }
+        
+        function hideReplyModal() {
+            document.getElementById('replyModal').classList.remove('active');
+            document.getElementById('replyForm').reset();
+            replyToId = null;
+        }
+        
+        document.getElementById('replyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser || !replyToId) return;
+            
+            const recipient = document.getElementById('replyRecipient').value;
+            const subject = document.getElementById('replySubject').value;
+            const message = document.getElementById('replyMessage').value;
+            
+            try {
+                // sender এর নাম পাওয়া
+                const { data: senderData } = await _supabase
+                    .from('profiles')
+                    .select('full_name')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                const senderName = senderData?.full_name || currentUser.user_metadata?.full_name || 'Unknown';
+                
+                // ইমেইল সেভ করুন
+                const { error: emailError } = await _supabase
+                    .from('emails')
+                    .insert([
+                        {
+                            sender_id: currentUser.id,
+                            sender_name: senderName,
+                            recipient_id: replyToId,
+                            recipient_email: recipient,
+                            subject: subject,
+                            message: message,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+                
+                if (emailError) throw emailError;
+                
+                showAlert('replyAlert', 'রিপ্লাই সফলভাবে পাঠানো হয়েছে!', true);
+                showNotification('রিপ্লাই পাঠানো হয়েছে!', 'আপনার রিপ্লাই সফলভাবে পাঠানো হয়েছে।', true);
+                hideReplyModal();
+                
+            } catch (error) {
+                showAlert('replyAlert', error.message);
+                console.error('Reply error:', error);
+            }
+        });
         
         // ==================== কম্পোজ মোডাল ====================
         function showComposeModal() {
@@ -1404,16 +1798,8 @@
                     .eq('email', recipient)
                     .maybeSingle();
                 
-                if (recipientError) {
-                    console.error('Recipient search error:', recipientError);
-                    throw new Error('প্রাপকের তথ্য খুঁজতে সমস্যা');
-                }
-                
-                if (!recipientData) {
-                    throw new Error('এই ইমেইলে কোনো অ্যাকাউন্ট নেই');
-                }
-                
-                console.log('Recipient found:', recipientData);
+                if (recipientError) throw new Error('প্রাপকের তথ্য খুঁজতে সমস্যা');
+                if (!recipientData) throw new Error('এই ইমেইলে কোনো অ্যাকাউন্ট নেই');
                 
                 // sender এর নাম পাওয়া
                 const { data: senderData } = await _supabase
@@ -1425,7 +1811,7 @@
                 const senderName = senderData?.full_name || currentUser.user_metadata?.full_name || 'Unknown';
                 
                 // ইমেইল সেভ করুন
-                const { data: emailData, error: emailError } = await _supabase
+                const { error: emailError } = await _supabase
                     .from('emails')
                     .insert([
                         {
@@ -1437,20 +1823,14 @@
                             message: message,
                             created_at: new Date().toISOString()
                         }
-                    ])
-                    .select();
+                    ]);
                 
-                if (emailError) {
-                    console.error('Email insert error:', emailError);
-                    throw emailError;
-                }
-                
-                console.log('Email sent successfully:', emailData);
+                if (emailError) throw emailError;
                 
                 showAlert('composeAlert', 'মেইল সফলভাবে পাঠানো হয়েছে!', true);
+                showNotification('মেইল পাঠানো হয়েছে!', `"${subject}" সফলভাবে পাঠানো হয়েছে।`, true);
                 hideComposeModal();
                 
-                // রিয়েল-টাইম আপডেটের জন্য
                 setTimeout(() => loadEmails(), 1000);
                 
             } catch (error) {
@@ -1462,11 +1842,17 @@
         // ==================== লগআউট ====================
         async function logout() {
             try {
+                if (realtimeSubscription) {
+                    realtimeSubscription.unsubscribe();
+                }
+                
                 const { error } = await _supabase.auth.signOut();
                 if (error) throw error;
                 
                 currentUser = null;
                 showLanding();
+                showNotification('বিদায়!', 'আপনি লগআউট করেছেন।', false);
+                
             } catch (error) {
                 console.error('Logout error:', error);
             }
@@ -1505,9 +1891,14 @@
         
         // ==================== মোডাল ক্লোজ ====================
         window.onclick = function(event) {
-            const modal = document.getElementById('composeModal');
-            if (event.target === modal) {
+            const composeModal = document.getElementById('composeModal');
+            const replyModal = document.getElementById('replyModal');
+            
+            if (event.target === composeModal) {
                 hideComposeModal();
+            }
+            if (event.target === replyModal) {
+                hideReplyModal();
             }
         }
         
