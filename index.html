@@ -977,7 +977,7 @@
                         ইনবক্স
                         <span class="badge" id="inboxCount">0</span>
                     </li>
-                    <li>
+                    <li onclick="loadSentEmails()">
                         <i class="fas fa-paper-plane"></i>
                         পাঠানো
                         <span class="badge" id="sentCount">0</span>
@@ -1124,7 +1124,8 @@
             const password = document.getElementById('signupPassword').value;
             
             try {
-                // Supabase এ সাইন আপ
+                console.log('Signup started for:', email);
+                
                 const { data, error } = await _supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -1137,22 +1138,30 @@
                 
                 if (error) throw error;
                 
+                console.log('Auth signup successful:', data);
+                
                 if (data.user) {
+                    // ২ সেকেন্ড wait (Auth sync এর জন্য)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
                     // profiles টেবিলে ডাটা সেভ
                     const { error: profileError } = await _supabase
                         .from('profiles')
-                        .insert([
+                        .upsert([
                             {
                                 id: data.user.id,
                                 full_name: name,
                                 email: email,
-                                created_at: new Date()
+                                created_at: new Date().toISOString()
                             }
                         ]);
                     
                     if (profileError) {
                         console.error('Profile insert error:', profileError);
+                        throw new Error('প্রোফাইল তৈরি করতে সমস্যা: ' + profileError.message);
                     }
+                    
+                    console.log('Profile created successfully');
                 }
                 
                 showAlert('signupAlert', 'রেজিস্ট্রেশন সফল! এখন লগইন করুন।', true);
@@ -1180,8 +1189,27 @@
                 if (error) throw error;
                 
                 currentUser = data.user;
-                showAlert('loginAlert', 'লগইন সফল!', true);
                 
+                // প্রোফাইল চেক করুন
+                const { data: profile } = await _supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                // প্রোফাইল না থাকলে তৈরি করুন
+                if (!profile) {
+                    await _supabase
+                        .from('profiles')
+                        .upsert({
+                            id: currentUser.id,
+                            full_name: currentUser.user_metadata?.full_name || 'User',
+                            email: currentUser.email,
+                            created_at: new Date().toISOString()
+                        });
+                }
+                
+                showAlert('loginAlert', 'লগইন সফল!', true);
                 setTimeout(() => showInbox(), 1000);
                 
             } catch (error) {
@@ -1201,12 +1229,20 @@
                     .eq('id', currentUser.id)
                     .single();
                 
-                if (error) throw error;
+                if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+                    console.error('Error loading profile:', error);
+                }
                 
                 if (data) {
                     document.getElementById('userName').textContent = data.full_name || 'User';
                     document.getElementById('userEmail').textContent = data.email || currentUser.email;
                     document.getElementById('userAvatar').textContent = (data.full_name || 'U')[0].toUpperCase();
+                } else {
+                    // প্রোফাইল না থাকলে display name দেখান
+                    document.getElementById('userName').textContent = currentUser.user_metadata?.full_name || 'User';
+                    document.getElementById('userEmail').textContent = currentUser.email;
+                    document.getElementById('userAvatar').textContent = 
+                        (currentUser.user_metadata?.full_name || 'U')[0].toUpperCase();
                 }
             } catch (error) {
                 console.error('Error loading user data:', error);
@@ -1221,7 +1257,7 @@
             }
             
             try {
-                console.log('Loading emails for user:', currentUser.id);
+                console.log('Loading inbox for user:', currentUser.id);
                 
                 const { data: emails, error } = await _supabase
                     .from('emails')
@@ -1234,16 +1270,18 @@
                     throw error;
                 }
                 
-                console.log('Emails found:', emails);
+                console.log('Emails found:', emails?.length || 0);
                 displayEmails(emails || []);
                 
                 // পাঠানো মেইলের সংখ্যা আপডেট
-                const { data: sentEmails } = await _supabase
+                const { data: sentEmails, error: sentError } = await _supabase
                     .from('emails')
-                    .select('*', { count: 'exact', head: true })
+                    .select('id')
                     .eq('sender_id', currentUser.id);
                 
-                document.getElementById('sentCount').textContent = sentEmails?.length || 0;
+                if (!sentError) {
+                    document.getElementById('sentCount').textContent = sentEmails?.length || 0;
+                }
                 
             } catch (error) {
                 console.error('Error loading emails:', error);
@@ -1257,12 +1295,34 @@
             }
         }
         
+        // ==================== পাঠানো মেইল লোড ====================
+        async function loadSentEmails() {
+            if (!currentUser) return;
+            
+            try {
+                const { data: emails, error } = await _supabase
+                    .from('emails')
+                    .select('*')
+                    .eq('sender_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                displayEmails(emails || []);
+                
+            } catch (error) {
+                console.error('Error loading sent emails:', error);
+            }
+        }
+        
         // ==================== ইমেইল ডিসপ্লে ====================
         function displayEmails(emails) {
             const emailList = document.getElementById('emailList');
             const inboxCount = document.getElementById('inboxCount');
             
-            inboxCount.textContent = emails.length;
+            if (inboxCount) {
+                inboxCount.textContent = emails.length;
+            }
             
             if (emails.length === 0) {
                 emailList.innerHTML = `
@@ -1280,7 +1340,9 @@
                 const date = new Date(email.created_at).toLocaleDateString('bn-BD', {
                     year: 'numeric',
                     month: 'short',
-                    day: 'numeric'
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
                 
                 html += `
@@ -1303,7 +1365,7 @@
             emailList.innerHTML = html;
         }
         
-        // ==================== মেইল ভিউ (পরবর্তীতে ইমপ্লিমেন্ট করা যাবে) ====================
+        // ==================== মেইল ভিউ ====================
         function viewEmail(emailId) {
             console.log('View email:', emailId);
             // এখানে মেইল ডিটেইলস দেখানোর ফাংশন যোগ করতে পারেন
@@ -1340,14 +1402,27 @@
                     .from('profiles')
                     .select('id, full_name')
                     .eq('email', recipient)
-                    .single();
+                    .maybeSingle();
                 
                 if (recipientError) {
-                    console.error('Recipient not found:', recipientError);
+                    console.error('Recipient search error:', recipientError);
+                    throw new Error('প্রাপকের তথ্য খুঁজতে সমস্যা');
+                }
+                
+                if (!recipientData) {
                     throw new Error('এই ইমেইলে কোনো অ্যাকাউন্ট নেই');
                 }
                 
                 console.log('Recipient found:', recipientData);
+                
+                // sender এর নাম পাওয়া
+                const { data: senderData } = await _supabase
+                    .from('profiles')
+                    .select('full_name')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                const senderName = senderData?.full_name || currentUser.user_metadata?.full_name || 'Unknown';
                 
                 // ইমেইল সেভ করুন
                 const { data: emailData, error: emailError } = await _supabase
@@ -1355,12 +1430,12 @@
                     .insert([
                         {
                             sender_id: currentUser.id,
-                            sender_name: currentUser.user_metadata?.full_name || 'Unknown',
+                            sender_name: senderName,
                             recipient_id: recipientData.id,
                             recipient_email: recipient,
                             subject: subject,
                             message: message,
-                            created_at: new Date()
+                            created_at: new Date().toISOString()
                         }
                     ])
                     .select();
@@ -1375,7 +1450,7 @@
                 showAlert('composeAlert', 'মেইল সফলভাবে পাঠানো হয়েছে!', true);
                 hideComposeModal();
                 
-                // ইনবক্স রিফ্রেশ করুন
+                // রিয়েল-টাইম আপডেটের জন্য
                 setTimeout(() => loadEmails(), 1000);
                 
             } catch (error) {
@@ -1415,7 +1490,7 @@
                 }
                 
                 if (user) {
-                    console.log('User found:', user);
+                    console.log('User found:', user.email);
                     currentUser = user;
                     showInbox();
                 } else {
